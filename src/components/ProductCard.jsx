@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
       className="w-full sm:w-64 h-auto flex flex-col relative z-10 card cursor-pointer rounded-md"
     >
       <div className="h-56 sm:h-64 bg-[#f5f5f5] rounded-md flex justify-center items-center relative z-10 overflow-hidden">
-        {product.discountPercent && (
+        {product.discountPercent != 0 && (
           <div className="absolute bg-primary top-2 left-2 text-white px-2 rounded-md text-sm z-20">
             -{product.discountPercent}%
           </div>
@@ -49,7 +49,7 @@ const ProductCard = ({ product }) => {
           />
         </button>
         <img
-          src={product.images && product.images[0] }
+          src={product.images && product.images[0]}
           alt={product.name}
           className="photo z-0 w-full h-full object-contain transition-all duration-300"
           draggable={false}
@@ -60,7 +60,9 @@ const ProductCard = ({ product }) => {
         {product.discountPercent ? (
           <div className="flex justify-center">
             <h1 className="text-primary">
-              ${product.price - Math.round((product.discountPercent * product.price) / 100)}
+              $
+              {product.price -
+                Math.round((product.discountPercent * product.price) / 100)}
             </h1>
             <h1 className="pl-3 line-through">${product.price}</h1>
           </div>
@@ -75,7 +77,9 @@ const ProductCard = ({ product }) => {
             alt="Star"
             width={16}
           />
-          <h1 className="text-sm">{product.rating}({product.peopleRated})</h1>
+          <h1 className="text-sm">
+            {product.rating}({product.peopleRated})
+          </h1>
         </div>
         <button
           onClick={handleCart}
