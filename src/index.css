@@ -1,4 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-    
+
+.category-title {
+  position: relative;
+  padding-left: 1.5rem;
+  font-family: sans-serif;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #db4444;
+}
+
+.category-title::before {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 30px;
+  background-color: #db4444;
+  left: 0;
+  top: -0.3125rem;
+  border-radius: 10%;
+}
+
+.card:hover{
+  box-shadow: #4e4e4e73 0 3px 5px;
+}
+
+.card:hover .photo {
+  scale: 1.05;
+}
+

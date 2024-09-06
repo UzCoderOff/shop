@@ -1,21 +1,23 @@
-import React from "react";
-import Search from "./Search";
+import React, { useState, useEffect } from "react";
+import NavbarMobile from '../mobile/NavbarMobile';
+import NavbarDesktop from '../desktop/NavbarDesktop';
 
 const Navbar = () => {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 960);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 960);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <nav className="border-b-[1.5px] pb-4 pt-10 px-[9.3%]">
-      <div className="flex flex-row align-middle justify-between">
-        <h1 className="text-2xl font-bold font-sans">Exclusive</h1>
-        <div className="flex flex-row align-middle justify-between">
-          <a href="#" className="font-sans font-normal text-base text-black hover:text-gray-500 px-6">Home</a>
-          <a href="#" className="font-sans font-normal text-base text-black hover:text-gray-500 px-6">Contact</a>
-          <a href="#" className="font-sans font-normal text-base text-black hover:text-gray-500 px-6">About</a>
-        </div>
-        <div>
-          <Search/>
-        </div>
-      </div>
-    </nav>
+    <>
+      {isMobile ? <NavbarMobile /> : <NavbarDesktop />}
+    </>
   );
 };
 
