@@ -56,11 +56,11 @@ const NavbarDesktop = () => {
           </div>
           <div className="flex items-center justify-center space-x-4">
             <button className="relative hover:bg-gray-300 p-2 transition-all duration-300 rounded-full" aria-label="Wishlist" onClick={()=> nav('/whishlist')}>
-              {whishlist.length > 0 && <Badge num={whishlist.length} />}
+              {whishlist && whishlist.length > 0 && <Badge num={whishlist.length} />}
               <Heart size={28} strokeWidth={1.75} />
             </button>
             <button className="relative hover:bg-gray-300 p-2 transition-all duration-300 rounded-full" aria-label="Cart" onClick={()=> nav('/cart')}>
-              {cart.length > 0 && <Badge num={cart.length} />}
+              {cart && cart.length > 0 && <Badge num={cart.length} />}
               <ShoppingCart size={28} strokeWidth={1.75} />
             </button>
             <button className="relative hover:bg-gray-300 p-2 transition-all duration-300 rounded-full" aria-label="User Profile">

@@ -11,9 +11,14 @@ const Cart = () => {
   }, []);
 
   const calculateTotal = (items) => {
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const total = items.reduce((sum, item) => {
+      const itemPrice = item.price || 0;
+      const itemQuantity = item.quantity || 1;
+      return sum + itemPrice * itemQuantity;
+    }, 0);
     setTotalPrice(total);
   };
+  
 
   const updateQuantity = (id, newQuantity) => {
     const updatedItems = cartItems.map(item =>
@@ -67,7 +72,7 @@ const Cart = () => {
                         ))}
                       </select>
                     </td>
-                    <td className="px-6 py-4 text-right">${(item.price * item.quantity).toFixed(2)}</td>
+                    <td className="px-6 py-4 text-right">${(item.price * (item.quantity || 1)).toFixed(2)}</td>
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => removeItem(item.id)}

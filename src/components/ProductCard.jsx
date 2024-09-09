@@ -59,12 +59,10 @@ const ProductCard = ({ product }) => {
         <h1 className="font-sans font-medium text-xl">{product.name}</h1>
         {product.discountPercent ? (
           <div className="flex justify-center">
-            <h1 className="text-primary">
-              $
-              {product.price -
-                Math.round((product.discountPercent * product.price) / 100)}
+            <h1 className="text-primary">${product.price}</h1>
+            <h1 className="pl-3 line-through">
+              ${Math.round((product.price * 100) / (100 - product.discountPercent))}
             </h1>
-            <h1 className="pl-3 line-through">${product.price}</h1>
           </div>
         ) : (
           <div className="flex justify-center">

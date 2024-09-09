@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../firebase/config';
-import { collection, getDocs } from 'firebase/firestore';
-import ProductCard from './ProductCard'
+import React, { useState, useEffect } from "react";
+import { db } from "../firebase/config";
+import { collection, getDocs } from "firebase/firestore";
+import ProductCard from "./ProductCard";
+import { Skeleton } from "primereact/skeleton";
 
 const AllProduct = () => {
   const [products, setProducts] = useState([]);
@@ -10,9 +11,12 @@ const AllProduct = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const productsCollection = collection(db, 'products');
+        const productsCollection = collection(db, "products");
         const productSnapshot = await getDocs(productsCollection);
-        const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const productList = productSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
         setProducts(productList);
       } catch (error) {
         console.error("Error fetching products: ", error);
@@ -24,20 +28,33 @@ const AllProduct = () => {
     fetchProducts();
   }, []);
 
+  const skeletons = Array(12).fill(null);
+
   if (loading) {
-    return <div className='w-[80vh]'>Loading...</div>;
+    return (
+      <div className="container mx-auto py-20  w-full">
+        <h1 className="category-title">All Products</h1>
+        <div className="grid xl:grid-cols-4 810:grid-cols-3 grid-cols-2 justify-center items-center gap-6">
+          {skeletons.map((_, index) => (
+            <div key={index} className="p-4 rounded-md">
+              <Skeleton width="60%" height="220px" />
+              <Skeleton width="60%" height="20px" className="mt-2" />
+              <Skeleton width="30%" height="20px" className="mt-2" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-6 ">
+    <div className="container mx-auto py-20  w-full">
       <h1 className="category-title">All Products</h1>
-      <div className="pt-5 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-[80vh]">
+      <div className="grid xl:grid-cols-4 pt-10 810:grid-cols-3 grid-cols-2 justify-center items-center gap-6">
         {products.length > 0 ? (
-          products.map(product => (
-            <ProductCard product={product}/>
-          ))
+          products.map((product) => <ProductCard product={product} />)
         ) : (
-          <div>No products available</div>
+          <div className="category-title">No products available</div>
         )}
       </div>
     </div>

@@ -9,11 +9,12 @@ import {
   Cart,
   WhishList,
   AllProduct,
+  Category,
 } from "./components";
 import { ScrollTop } from "primereact/scrolltop";
 import { ChevronUp } from "lucide-react";
 
-const App = () => { 
+const App = () => {
   return (
     <BrowserRouter>
       <Navbar />
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/all" element={<AllProduct />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/whishlist" element={<WhishList />} />
+        <Route path="/category/:name" element={<Category />} />
       </Routes>
       <ScrollTop icon={<ChevronUp color="#111" />} />
       <Footer />

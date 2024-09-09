@@ -22,7 +22,7 @@ const BrowseByCategory = () => {
         {categories.map((category, index) => {
           const Icon = category.icon;
           return (
-            <Link key={index}>
+            <Link to={`/category/${category.name.toLowerCase()}`} key={index}>
               <div className="xl:w-40 xl:p-0 md:px-4 h-36 border-2 flex align-middle justify-center flex-col items-center hover:bg-primary transition-all duration-300 cursor-pointer hover:text-white">
                 <Icon size={56} strokeWidth={1.25} />
                 <h1>{category.name}</h1>

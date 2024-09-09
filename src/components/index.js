@@ -6,3 +6,4 @@ export { default as Product } from "./Product";
 export { default as Cart } from "./Cart";
 export { default as WhishList } from "./WhishList";
 export { default as AllProduct } from "./AllProduct";
+export { default as Category } from "./Category";
