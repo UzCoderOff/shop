@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
+import { useNavigate } from "react-router-dom";
 
 const products = [
   {
@@ -8,6 +9,7 @@ const products = [
     imageUrl:
       'https://www.apple.com/v/home/bq/images/heroes/iphone-family/hero_iphone_family_a__c7v3mvx3jv42_largetall.jpg',
     brand: "https://img.icons8.com/?size=100&id=30840&format=png&color=FFFFFF",
+    url: "/product/0004ed12-eefa-40d8-bac1-931ea1d25be9"
   },
   {
     title: "Samsung Galaxy S24",
@@ -15,12 +17,14 @@ const products = [
     imageUrl:
       "https://images.samsung.com/in/smartphones/galaxy-s24-ultra/images/galaxy-s24-ultra-highlights-camera-overview-mo.jpg?imbypass=true",
     brand: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
+    url: "/product/ecb2cb29-9d71-48fb-965c-8f0038987a97"
   },
   {
     title: "Canon EOS R5 Camera",
     promo: "Special Offer: 10% Off + Free Shipping",
     imageUrl: "https://www.premiumbeat.com/blog/wp-content/uploads/2020/05/canon-r5-as-video-camera-cover.jpg",
     brand: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Canon_wordmark.svg",
+    url: "/product/d7c25924-6a24-437c-b939-07f2594f9f70"
   },
   {
     title: "MacBook Pro",
@@ -28,6 +32,7 @@ const products = [
     imageUrl:
       'https://www.lydogbillede.dk/wp-content/uploads/2023/11/hero_intro_endframe__e6khcva4hkeq_large.jpg',
     brand: "https://img.icons8.com/?size=100&id=30840&format=png&color=FFFFFF",
+    url: "/product/c720874b-0f4d-4c18-bdc9-4be64afdb5bf"
   },
   {
     title: "Apple Watch Series 9",
@@ -35,11 +40,13 @@ const products = [
     imageUrl:
       "https://www.apple.com/v/apple-watch-series-9/d/images/meta/watch_series_9_gps_lte__eopecolsebyq_og.png",
     brand: "https://img.icons8.com/?size=100&id=30840&format=png&color=FFFFFF",
+    url: "/product/2b1a36f2-197c-416f-b50e-b16d743e9b23"
   },
 ];
 
 const Carousel = () => {
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
+  const nav = useNavigate()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,7 +87,7 @@ const Carousel = () => {
               <h2 className="text-white text-2xl font-bold mb-2 md:text-4xl md:mb-4">
                 {product.promo}
               </h2>
-              <Button className="bg-white text-black hover:bg-gray-200 px-3 py-1 md:px-4 md:py-2 font-semibold">
+              <Button onClick={()=> nav(product.url)}  className="bg-white text-black hover:bg-gray-200 px-3 py-1 md:px-4 md:py-2 font-semibold">
                 Shop Now <span className="ml-2">→</span>
               </Button>
             </div>

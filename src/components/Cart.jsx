@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import CheckoutDialog from './CheckoutDialog';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [checkoutVisible, setCheckoutVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     const storedCartItems = JSON.parse(localStorage.getItem('cart')) || [];
@@ -18,7 +21,6 @@ const Cart = () => {
     }, 0);
     setTotalPrice(total);
   };
-  
 
   const updateQuantity = (id, newQuantity) => {
     const updatedItems = cartItems.map(item =>
@@ -36,6 +38,11 @@ const Cart = () => {
     localStorage.setItem('cart', JSON.stringify(updatedItems));
   };
 
+  const handleCheckout = (item) => {
+    setSelectedItem(item);
+    setCheckoutVisible(true);
+  };
+
   return (
     <div className="container mx-auto p-6 h-[80vh]"> 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full"> 
@@ -48,7 +55,7 @@ const Cart = () => {
                   <th className="px-6 py-4 border-b text-right">Price</th>
                   <th className="px-6 py-4 border-b text-center">Quantity</th>
                   <th className="px-6 py-4 border-b text-right">Subtotal</th>
-                  <th className="px-6 py-4 border-b text-center">Remove</th>
+                  <th className="px-6 py-4 border-b text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,7 +115,7 @@ const Cart = () => {
               <p className="mb-4">Total: ${totalPrice.toFixed(2)}</p>
               <button
                 className="bg-red-500 text-white py-2 px-4 w-full rounded hover:bg-red-600"
-                onClick={() => window.location.href = '/checkout'}
+                onClick={() => setCheckoutVisible(true)}
               >
                 Proceed to Checkout
               </button>
@@ -116,6 +123,18 @@ const Cart = () => {
           )}
         </div>
       </div>
+
+      <CheckoutDialog
+        visible={checkoutVisible}
+        onHide={() => setCheckoutVisible(false)}
+        onSubmit={() => {
+          setCheckoutVisible(false);
+          setCartItems(cartItems.filter(item => item.id !== selectedItem?.id));
+          localStorage.setItem('cart', JSON.stringify(cartItems.filter(item => item.id !== selectedItem?.id)));
+        }}
+        product={selectedItem}
+        updateCart={(newCart)=> setCartItems(newCart)}
+      />
     </div>
   );
 };

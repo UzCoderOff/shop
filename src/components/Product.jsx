@@ -9,58 +9,34 @@ import { Heart, Minus, Plus } from "lucide-react";
 import ProductCard from "./ProductCard";
 import Error404 from "./Error404";
 import { ProgressSpinner } from "primereact/progressspinner";
+import CheckoutDialog from './CheckoutDialog'
 
 const Product = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedImg, setSelectedImg] = useState("");
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [fav, setFav] = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const nav = useNavigate();
-
-  const fetchRelated = async (category) => {
-    console.log("Fetching related products for category:", category);
-    try {
-      const q = query(
-        collection(db, "products"),
-        where("category", "==", category),
-        limit(4)
-      );
-      const querySnapshot = await getDocs(q);
-      const relatedProducts = querySnapshot.docs.map((doc) => doc.data());
-      console.log("Found related products:", relatedProducts);
-      const filteredRelatedProducts = relatedProducts.filter(
-        (relatedProduct) => relatedProduct.id !== product.id
-      );
-      console.log("Filtered related products:", filteredRelatedProducts);
-      setRelatedProducts(filteredRelatedProducts);
-    } catch (error) {
-      console.error("Error fetching related products:", error);
-    }
-  };
+  const [checkoutVisible, setCheckoutVisible] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   const fetchProduct = async () => {
-    if (!productId) {
-      console.error("Product ID is undefined!");
-      setLoading(false);
-      return;
-    }
     try {
       const productsRef = collection(db, "products");
       const q = query(productsRef, where("id", "==", productId));
       const querySnapshot = await getDocs(q);
+
       if (!querySnapshot.empty) {
         const productData = querySnapshot.docs[0].data();
-        console.log("Fetched product data:", productData);
         setProduct(productData);
         setSelectedImg(productData.images[0]);
 
         const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
         setFav(wishlist.some((item) => item.id === productData.id));
-      } else {
-        console.log("No such product found!");
+
+        fetchRelatedProducts(productData.category, productId);
       }
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -69,41 +45,45 @@ const Product = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchProduct();
-      if (product && product.category) {
-        await fetchRelated(product.category);
-      }
-    };
-    fetchData();
-  }, [productId]);
-
-  const handleQuantityChange = (e) => {
-    const value = e.value === null ? 0 : e.value;
-    if (value <= product?.stock) {
-      setQuantity(value);
+  const fetchRelatedProducts = async (category, currentProductId) => {
+    try {
+      const relatedProductsRef = collection(db, "products");
+      const q = query(relatedProductsRef, where("category", "==", category));
+      const querySnapshot = await getDocs(q);
+      const products = querySnapshot.docs
+        .map((doc) => doc.data())
+        .filter((prod) => prod.id !== currentProductId);
+      setRelatedProducts(products);
+    } catch (error) {
+      console.error("Error fetching related products:", error);
     }
   };
 
-  const handleWishlist = (e) => {
-    e.stopPropagation();
+  useEffect(() => {
+    fetchProduct();
+  }, [productId]);
+
+  const handleWishlist = () => {
     const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    const updatedWishlist = fav
-      ? wishlist.filter((item) => item.id !== product.id)
-      : [...wishlist, product];
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    if (fav) {
+      const updatedWishlist = wishlist.filter((item) => item.id !== product.id);
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    } else {
+      wishlist.push(product);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    }
     setFav(!fav);
   };
 
-  const handleCart = (e) => {
-    e.stopPropagation();
+  const handleCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const updatedCart = [...cart, product];
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    cart.push({ ...product, quantity });
+    localStorage.setItem("cart", JSON.stringify(cart));
   };
 
-  const stock = product?.stock;
+  const handleQuantityChange = (e) => {
+    setQuantity(e.value);
+  };
 
   const items = [
     { label: "Home", url: "/" },
@@ -113,11 +93,17 @@ const Product = () => {
 
   if (loading) {
     return (
-      <div className="fixed top-0 left-0 w-full h-[100vh] bg-[#ffffffc0] backdrop-blur-md flex align-middle justify-center items-center">
+      <div className="fixed top-0 left-0 w-full h-[100vh] bg-[rgba(0,0,0,0.6)] z-50 flex justify-center items-center">
         <ProgressSpinner />
       </div>
     );
   }
+
+  if (!product) {
+    return <Error404 />;
+  }
+
+  const stock = product?.stock || 0;
 
   if (!product) {
     return <Error404 />;
@@ -201,6 +187,12 @@ const Product = () => {
                   className="bg-primary text-white py-2 px-5 lg:px-7 rounded-md"
                   onClick={() => setCheckoutVisible(true)}
                 />
+                <CheckoutDialog
+                  visible={checkoutVisible}
+                  onHide={() => setCheckoutVisible(false)}
+                  cartItems={cartItems}
+                  updateCart={(newCart) => setCartItems(newCart)}
+                />
                 <Button
                   icon={
                     <Heart
@@ -226,13 +218,13 @@ const Product = () => {
       </div>
       <div className="py-5">
         <h1 className="category-title">Related Items</h1>
-        <div className="grid xl:grid-cols-4 pt-10 810:grid-cols-3 grid-cols-2 justify-center items-center gap-6">
+        <div className="grid xl:grid-cols-4 pt-10 810:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1 gap-6 justify-between">
           {relatedProducts.length > 0 ? (
-            relatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            relatedProducts.map((relatedProduct, index) => (
+              <ProductCard key={index} product={relatedProduct} />
             ))
           ) : (
-            <div className="category-title">No related products available</div>
+            <p>No related products found.</p>
           )}
         </div>
       </div>

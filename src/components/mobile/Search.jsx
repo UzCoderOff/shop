@@ -1,18 +1,63 @@
-import React, { useState } from "react";
-import { AutoComplete } from "primereact/autocomplete";
-import "primereact/resources/themes/saga-blue/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
+import React, { useState, useEffect } from 'react';
+import { AutoComplete } from 'primereact/autocomplete';
+import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 const Search = () => {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [query, setQuery] = useState('');
+  const nav = useNavigate();
 
-  const handleChange = (e) => {
-    setSelectedItem(e.value);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsCollection = collection(db, 'products');
+        const productsSnapshot = await getDocs(productsCollection);
+        const productsList = productsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProducts(productsList);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const searchProduct = (event) => {
+    setQuery(event.query);
+    const results = products.filter(product =>
+      product.name.toLowerCase().includes(event.query.toLowerCase())
+    );
+    setFilteredProducts(results);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (selectedProduct) {
+      nav(`/product/${selectedProduct.id}`);
+    } else if (query) {
+      nav(`/search?query=${query}`);
+    }
+    setSelectedProduct(null);
+  };
+
+  const itemTemplate = (item) => {
+    return (
+      <div className="flex align-items-center">
+        <img src={item.images[0]} alt={item.name} className="inline-block h-16 mr-4" />
+        <span>{item.name}</span>
+      </div>
+    );
   };
 
   return (
-    <div className="bg-[#f5f5f5] p-2 flex flex-row align-middle justify-start px-3 pl-5 gap-8 py-2 w-full">
+    <form onSubmit={handleSearch} className="bg-[#f5f5f5] p-2 flex flex-row align-middle justify-start px-3 pl-5 gap-8 py-2 w-full">
       <button>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -26,19 +71,26 @@ const Search = () => {
         </svg>
       </button>
       <div>
-        <AutoComplete
-          className="w-[100%] mr-4"
-          value={selectedItem}
-          onChange={handleChange}
-          placeholder="What are you looking for?"
-          inputStyle={{
-            backgroundColor: "transparent",
-            width: "100%",
-            boxShadow: "none",
-          }}
-        />
+      <AutoComplete
+        value={query}
+        suggestions={filteredProducts}
+        completeMethod={searchProduct}
+        field="name"
+        onChange={(e) => {
+          setQuery(e.value);
+          setSelectedProduct(null);
+        }}
+        onSelect={(e) => setSelectedProduct(e.value)}
+        placeholder="What are you looking for?"
+        itemTemplate={itemTemplate}
+        inputStyle={{
+          backgroundColor: 'transparent',
+          width: '100%',
+          boxShadow: 'none',
+        }}
+      />
       </div>
-    </div>
+    </form>
   );
 };
 

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Jbl = () => {
   const [timeLeft, setTimeLeft] = useState({});
+  const nav = useNavigate()
 
   useEffect(() => {
     const targetDate = new Date('October 5, 2024 00:00:00').getTime();
@@ -26,7 +28,7 @@ const Jbl = () => {
   }, []);
 
   return (
-    <div className="w-full bg-black text-white p-6 md:p-12">
+    <div className="w-full bg-black text-white p-6 md:p-12" >
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 items-center">
         <div className="space-y-4">
           <p className="text-green-400 text-lg font-semibold">Categories</p>
@@ -55,7 +57,7 @@ const Jbl = () => {
           ) : (
             <p className="text-xl font-bold">Offer has ended!</p>
           )}
-          <button className="bg-green-500 hover:bg-green-600 text-black font-bold py-2 px-4 rounded-full mt-4">
+          <button className="bg-green-500 hover:bg-green-600 text-black font-bold py-2 px-4 rounded-full mt-4" onClick={()=> nav('/product/6bdc8c31-2638-4490-9253-3441eff2bbc8')}>
             Buy Now!
           </button>
         </div>

@@ -36,7 +36,7 @@ const NavbarDesktop = () => {
             Home
           </a>
           <a
-            href="#"
+            href="#footer"
             className="font-sans font-normal text-base text-black hover:text-gray-500 transition-colors duration-300"
             aria-label="Contact"
           >
@@ -63,9 +63,9 @@ const NavbarDesktop = () => {
               {cart && cart.length > 0 && <Badge num={cart.length} />}
               <ShoppingCart size={28} strokeWidth={1.75} />
             </button>
-            <button className="relative hover:bg-gray-300 p-2 transition-all duration-300 rounded-full" aria-label="User Profile">
+            {/* <button className="relative hover:bg-gray-300 p-2 transition-all duration-300 rounded-full" aria-label="User Profile">
               <UserRound size={28} strokeWidth={1.75} />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

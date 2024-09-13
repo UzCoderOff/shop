@@ -5,9 +5,11 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { Heart, House, ShoppingCart, UserRound } from "lucide-react";
 import Badge from "../Badge";
+import { useNavigate } from "react-router-dom";
 
 const NavbarMobile = () => {
   const [selectedItem, setSelectedItem] = useState(null);
+  const nav = useNavigate()
 
   const handleChange = (e) => {
     setSelectedItem(e.value);
@@ -41,16 +43,16 @@ const NavbarMobile = () => {
         </div>
       </div>
       <div className="fixed bottom-0 right-0 w-full border-t-2 h-12 flex flex-row align-middle items-center justify-evenly bg-white z-50">
-        <House size={28} strokeWidth={1.75} />
-        <div className="relative">
-        <Badge num={2} />
-        <ShoppingCart size={28} strokeWidth={1.75} />
+        <House size={28} strokeWidth={1.75} onClick={()=> nav('/')}/>
+        <div className="relative" onClick={()=> nav('/cart')} >
+          <Badge num={2} />
+          <ShoppingCart size={28} strokeWidth={1.75} />
         </div>
-        <div className="relative">
-          <Badge num={'9+'}/>
-        <Heart size={28} strokeWidth={1.75} />
+        <div className="relative" onClick={()=> nav('/whishlist')}>
+          <Badge num={"9+"} />
+          <Heart size={28} strokeWidth={1.75} />
         </div>
-        <UserRound size={28} strokeWidth={1.75} />
+        {/* <UserRound size={28} strokeWidth={1.75} /> */}
       </div>
     </>
   );
